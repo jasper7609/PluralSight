@@ -1,0 +1,306 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "MyDataFactoryjjj"
+		},
+		"MyStorageAccountjjj_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'MyStorageAccountjjj'"
+		},
+		"LogDatabase_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'LogDatabase'"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/pipeline1')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "CopyBlobDataToAzureSQL",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "AzureSqlSink",
+								"tableOption": "autoCreate"
+							},
+							"enableStaging": false
+						},
+						"inputs": [
+							{
+								"referenceName": "BlobCsvDataset",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "AzureSqlTable1",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/BlobCsvDataset')]",
+				"[concat(variables('factoryId'), '/datasets/AzureSqlTable1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/MyStorageAccountjjj')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('MyStorageAccountjjj_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/BlobCsvDataset')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "MyStorageAccountjjj",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "storm_data_search_results.csv",
+						"container": "logdata"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "EVENT_ID",
+						"type": "String"
+					},
+					{
+						"name": "CZ_NAME_STR",
+						"type": "String"
+					},
+					{
+						"name": "BEGIN_LOCATION",
+						"type": "String"
+					},
+					{
+						"name": "BEGIN_DATE",
+						"type": "String"
+					},
+					{
+						"name": "BEGIN_TIME",
+						"type": "String"
+					},
+					{
+						"name": "EVENT_TYPE",
+						"type": "String"
+					},
+					{
+						"name": "MAGNITUDE",
+						"type": "String"
+					},
+					{
+						"name": "TOR_F_SCALE",
+						"type": "String"
+					},
+					{
+						"name": "DEATHS_DIRECT",
+						"type": "String"
+					},
+					{
+						"name": "INJURIES_DIRECT",
+						"type": "String"
+					},
+					{
+						"name": "DAMAGE_PROPERTY_NUM",
+						"type": "String"
+					},
+					{
+						"name": "DAMAGE_CROPS_NUM",
+						"type": "String"
+					},
+					{
+						"name": "STATE_ABBR",
+						"type": "String"
+					},
+					{
+						"name": "CZ_TIMEZONE",
+						"type": "String"
+					},
+					{
+						"name": "MAGNITUDE_TYPE",
+						"type": "String"
+					},
+					{
+						"name": "EPISODE_ID",
+						"type": "String"
+					},
+					{
+						"name": "CZ_TYPE",
+						"type": "String"
+					},
+					{
+						"name": "CZ_FIPS",
+						"type": "String"
+					},
+					{
+						"name": "WFO",
+						"type": "String"
+					},
+					{
+						"name": "INJURIES_INDIRECT",
+						"type": "String"
+					},
+					{
+						"name": "DEATHS_INDIRECT",
+						"type": "String"
+					},
+					{
+						"name": "SOURCE",
+						"type": "String"
+					},
+					{
+						"name": "FLOOD_CAUSE",
+						"type": "String"
+					},
+					{
+						"name": "TOR_LENGTH",
+						"type": "String"
+					},
+					{
+						"name": "TOR_WIDTH",
+						"type": "String"
+					},
+					{
+						"name": "BEGIN_RANGE",
+						"type": "String"
+					},
+					{
+						"name": "BEGIN_AZIMUTH",
+						"type": "String"
+					},
+					{
+						"name": "END_RANGE",
+						"type": "String"
+					},
+					{
+						"name": "END_AZIMUTH",
+						"type": "String"
+					},
+					{
+						"name": "END_LOCATION",
+						"type": "String"
+					},
+					{
+						"name": "BEGIN_LAT",
+						"type": "String"
+					},
+					{
+						"name": "BEGIN_LON",
+						"type": "String"
+					},
+					{
+						"name": "END_LAT",
+						"type": "String"
+					},
+					{
+						"name": "END_LON",
+						"type": "String"
+					},
+					{
+						"name": "EVENT_NARRATIVE",
+						"type": "String"
+					},
+					{
+						"name": "EPISODE_NARRATIVE",
+						"type": "String"
+					},
+					{
+						"name": "ABSOLUTE_ROWNUMBER",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/MyStorageAccountjjj')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/LogDatabase')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"connectionString": "[parameters('LogDatabase_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureSqlTable1')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LogDatabase",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "zzz"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LogDatabase')]"
+			]
+		}
+	]
+}
